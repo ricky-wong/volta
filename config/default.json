@@ -1,0 +1,9 @@
+{
+  "discordBotToken": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+  "chargersToCheck": [
+    {
+      "channelId": "eastridge-round1",
+      "voltaId": "93ab8d66-0eeb-43e6-8829-2c1efb2a8419"
+    }
+  ]
+}

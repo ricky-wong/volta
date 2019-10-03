@@ -1,0 +1,24 @@
+{
+  "name": "volta-bot",
+  "version": "0.0.1",
+  "description": "A Volta charging availability.",
+  "main": "volta.js",
+  "scripts": {
+    "dev": "ts-node-dev --respawn --transpileOnly ./volta.ts",
+    "tsc": "tsc"
+  },
+  "author": "ricky-wong",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.3",
+    "config": "^3.2.2",
+    "discord.js": "^11.5.1",
+    "eslint": "^6.4.0",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.4",
+    "ts-node-dev": "^1.0.0-pre.43",
+    "typescript": "^3.6.3"
+  },
+  "devDependencies": {
+    "@types/node": "^12.7.5"
+  }
+}
