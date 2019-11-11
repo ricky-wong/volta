@@ -52,42 +52,52 @@ function poll() {
     uri: 'https://api.voltaapi.com/v1/public-sites',
   })
     .catch(err => {
-      console.error(err);
+      console.error('promise catch', err);
     })
-    .then(body => {
-      try {
-        const publicSites: VoltaApiResponse = JSON.parse(body);
-      } catch (e) {
-        console.error(e);
+    .then(
+      body => {
+        let publicSites: VoltaApiResponse = [];
+        try {
+          publicSites = JSON.parse(body || '[]');
+        } catch (e) {
+          console.error('json parse', body, e);
+        }
+
+        chargersToCheck.forEach((chargerToCheck, index) => {
+          const site = publicSites.find(publicSite => publicSite.id === chargerToCheck.voltaId);
+
+          if (!site) {
+            console.error('cant find site', chargerToCheck.voltaId);
+            return;
+          }
+
+          const count = site.chargers[0].available;
+          if (count > 0) {
+            if (chargerToCheck.isAvailable === false) {
+              notify(chargerToCheck.channelId, count);
+              console.log(
+                chargerToCheck.channelId + ` count=${count} isAvailable: ${chargerToCheck.isAvailable}->true`
+              );
+            }
+            chargersToCheck[index].isAvailable = true;
+          } else {
+            if (chargerToCheck.isAvailable === true) {
+              notify(chargerToCheck.channelId, count);
+              console.log(
+                chargerToCheck.channelId + ` count=${count} isAvailable: ${chargerToCheck.isAvailable}->false`
+              );
+            }
+            chargersToCheck[index].isAvailable = false;
+          }
+          console.log(count, site.name, chargerToCheck.isAvailable);
+        });
+
+        setTimeout(poll, 60 * 1000);
+      },
+      err => {
+        console.error('then onRejected', err);
       }
-
-      chargersToCheck.forEach((chargerToCheck, index) => {
-        const site = publicSites.find(publicSite => publicSite.id === chargerToCheck.voltaId);
-
-        if (!site) {
-          console.log('cant find site', chargerToCheck.voltaId);
-          return;
-        }
-
-        const count = site.chargers[0].available;
-        if (count > 0) {
-          if (chargerToCheck.isAvailable === false) {
-            notify(chargerToCheck.channelId, count);
-            console.log(chargerToCheck.channelId + ` count=${count} isAvailable: ${chargerToCheck.isAvailable}->true`);
-          }
-          chargersToCheck[index].isAvailable = true;
-        } else {
-          if (chargerToCheck.isAvailable === true) {
-            notify(chargerToCheck.channelId, count);
-            console.log(chargerToCheck.channelId + ` count=${count} isAvailable: ${chargerToCheck.isAvailable}->false`);
-          }
-          chargersToCheck[index].isAvailable = false;
-        }
-        console.log(count, site.name, chargerToCheck.isAvailable);
-      });
-
-      setTimeout(poll, 60 * 1000);
-    });
+    );
 }
 
 client.on('ready', () => {
