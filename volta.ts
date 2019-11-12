@@ -46,6 +46,25 @@ function notify(channelId: string, count: number) {
     });
 }
 
+function setTopic(channelId: string, count: number) {
+  const currentTime = new Date();
+  const nowString = currentTime.toLocaleTimeString([], {
+    hour12: true,
+    hour: 'numeric',
+    minute: '2-digit',
+    timeZone: 'America/Los_Angeles',
+  });
+
+  return client.channels
+    .filter(channel => channel.name === channelId)
+    .forEach(channel => {
+      channel
+        .setTopic(`${nowString}: ${count}`)
+        .then(updated => console.log(`Updated topic in ${updated.guild.name}/#${channelId}: ${updated.topic}`))
+        .catch(error => console.error('Failed to update ' + channelId, error));
+    });
+}
+
 function poll() {
   console.log('--> Retrieving data...');
   return RequestPromise({
@@ -89,6 +108,7 @@ function poll() {
             }
             chargersToCheck[index].isAvailable = false;
           }
+          setTopic(chargerToCheck.channelId, count);
           console.log(count, site.name, chargerToCheck.isAvailable);
         });
 
