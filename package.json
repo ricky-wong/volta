@@ -1,24 +1,24 @@
 {
   "name": "volta-bot",
-  "version": "0.0.1",
-  "description": "A Volta charging availability.",
-  "main": "volta.js",
+  "version": "0.0.2",
+  "description": "A notifier for Volta charging availability.",
+  "main": "volta.ts",
   "scripts": {
-    "dev": "ts-node-dev --respawn --transpileOnly ./volta.ts",
-    "tsc": "tsc"
+    "start": "ts-node volta.ts"
   },
   "author": "ricky-wong",
   "dependencies": {
-    "cheerio": "^1.0.0-rc.3",
-    "config": "^3.2.5",
-    "discord.js": "^11.5.1",
+    "@types/config": "0.0.36",
+    "@types/request-promise": "^4.1.45",
+    "config": "^3.3.0",
+    "discord.js": "^11.6.1",
     "eslint": "^6.8.0",
-    "request": "^2.88.0",
+    "request": "^2.88.2",
     "request-promise": "^4.2.5",
-    "ts-node-dev": "^1.0.0-pre.44",
-    "typescript": "^3.7.5"
+    "ts-node": "^8.6.2",
+    "typescript": "^3.8.3"
   },
   "devDependencies": {
-    "@types/node": "^12.12.26"
+    "@types/node": "^12.12.29"
   }
 }

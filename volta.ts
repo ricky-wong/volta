@@ -1,7 +1,6 @@
-const Discord = require('discord.js');
-const RequestPromise = require('request-promise');
-const cheerio = require('cheerio');
-const config = require('config');
+import Discord, { TextChannel } from 'discord.js';
+import RequestPromise from 'request-promise';
+import config from 'config';
 
 type Charger = {
   channelId: string;
@@ -9,7 +8,12 @@ type Charger = {
   isAvailable: boolean;
 };
 
-let chargersToCheck = [...config.get('chargersToCheck').map(c => Object.assign({}, c, { isAvailable: undefined }))];
+const configChargersToCheck: Array<Charger> = config.get('chargersToCheck');
+
+const chargersToCheck = configChargersToCheck.map(c => ({
+  ...c,
+  isAvailable: false,
+}));
 
 type ChargerLevel = {
   level: 'L2';
@@ -30,20 +34,25 @@ const client = new Discord.Client();
 
 function notify(channelId: string, count: number) {
   console.log('notifying');
-  return client.channels
-    .filter(channel => channel.name === channelId)
-    .forEach(channel => {
-      if (count) {
-        channel.send(
-          count +
-            ` EV charger${
-              count > 1 ? 's are' : ' is'
-            } now available. Double-check with the Volta app before you rush to grab it. <:TFTI:537689355553079306>`
-        );
-      } else {
-        channel.send('EV chargers are now all taken <:FeelsBadMan:482325542750650369>');
-      }
-    });
+  return (
+    client.channels
+      // @ts-ignore `.name` works
+      .filter(channel => channel.name === channelId)
+      .forEach(channel => {
+        if (count) {
+          // @ts-ignore `.send` works
+          channel.send(
+            count +
+              ` EV charger${
+                count > 1 ? 's are' : ' is'
+              } now available. Double-check with the Volta app before you rush to grab it. <:TFTI:537689355553079306>`
+          );
+        } else {
+          // @ts-ignore `.send` works
+          channel.send('EV chargers are now all taken <:FeelsBadMan:482325542750650369>');
+        }
+      })
+  );
 }
 
 function setTopic(channelId: string, count: number) {
@@ -55,14 +64,21 @@ function setTopic(channelId: string, count: number) {
     timeZone: 'America/Los_Angeles',
   });
 
-  return client.channels
-    .filter(channel => channel.name === channelId)
-    .forEach(channel => {
-      channel
-        .setTopic(`${nowString}: ${count}`)
-        .then(updated => console.log(`Updated topic in ${updated.guild.name}/#${channelId}: ${updated.topic}`))
-        .catch(error => console.error('Failed to update ' + channelId, error));
-    });
+  return (
+    client.channels
+      // @ts-ignore `.name` works
+      .filter(channel => channel.name === channelId)
+      .forEach(channel => {
+        channel
+          // @ts-ignore setTopic works
+          .setTopic(`${nowString}: ${count}`)
+          // Technically a GuildChannel, but TextChannel is fine
+          .then((updated: TextChannel) =>
+            console.log(`Updated topic in ${updated.guild.name}/#${channelId}: ${updated.topic}`)
+          )
+          .catch((error: any) => console.error('Failed to update ' + channelId, error));
+      })
+  );
 }
 
 function poll() {
@@ -70,11 +86,11 @@ function poll() {
   return RequestPromise({
     uri: 'https://api.voltaapi.com/v1/public-sites',
   })
-    .catch(err => {
+    .catch((err: any) => {
       console.error('promise catch', err);
     })
     .then(
-      body => {
+      (body: string) => {
         let publicSites: VoltaApiResponse = [];
         try {
           publicSites = JSON.parse(body || '[]');
@@ -114,7 +130,7 @@ function poll() {
 
         setTimeout(poll, 60 * 1000);
       },
-      err => {
+      (err: any) => {
         console.error('then onRejected', err);
       }
     );
@@ -128,7 +144,7 @@ client.on('ready', () => {
 
 client.on('error', console.error);
 
-const DISCORD_BOT_TOKEN = config.get('discordBotToken');
+const DISCORD_BOT_TOKEN: string = config.get('discordBotToken');
 if (!DISCORD_BOT_TOKEN) {
   console.error('Missing discordBotToken config key.');
   process.exit();
