@@ -1,6 +1,7 @@
-import Discord, { TextChannel } from 'discord.js';
-import RequestPromise from 'request-promise';
-import config from 'config';
+import * as Discord from 'discord.js';
+import * as RequestPromise from 'request-promise';
+// Default import with config results in undefined
+import * as config from 'config';
 
 type Charger = {
   channelId: string;
@@ -10,7 +11,7 @@ type Charger = {
 
 const configChargersToCheck: Array<Charger> = config.get('chargersToCheck');
 
-const chargersToCheck = configChargersToCheck.map(c => ({
+const chargersToCheck = configChargersToCheck.map((c) => ({
   ...c,
   isAvailable: false,
 }));
@@ -34,25 +35,26 @@ const client = new Discord.Client();
 
 function notify(channelId: string, count: number) {
   console.log('notifying');
-  return (
-    client.channels
-      // @ts-ignore `.name` works
-      .filter(channel => channel.name === channelId)
-      .forEach(channel => {
-        if (count) {
-          // @ts-ignore `.send` works
-          channel.send(
-            count +
-              ` EV charger${
-                count > 1 ? 's are' : ' is'
-              } now available. Double-check with the Volta app before you rush to grab it. <:TFTI:537689355553079306>`
-          );
-        } else {
-          // @ts-ignore `.send` works
-          channel.send('EV chargers are now all taken <:FeelsBadMan:482325542750650369>');
-        }
-      })
-  );
+  return client.channels
+    .filter((channel) => {
+      // We know this is a TextChannel
+      const textChannel = channel as Discord.TextChannel;
+      return textChannel.name === channelId;
+    })
+    .forEach((channel) => {
+      if (count) {
+        // @ts-ignore `.send` works
+        channel.send(
+          count +
+            ` EV charger${
+              count > 1 ? 's are' : ' is'
+            } now available. Double-check with the Volta app before you rush to grab it. <:TFTI:537689355553079306>`
+        );
+      } else {
+        // @ts-ignore `.send` works
+        channel.send('EV chargers are now all taken <:FeelsBadMan:482325542750650369>');
+      }
+    });
 }
 
 function setTopic(channelId: string, count: number) {
@@ -64,26 +66,29 @@ function setTopic(channelId: string, count: number) {
     timeZone: 'America/Los_Angeles',
   });
 
-  return (
-    client.channels
-      // @ts-ignore `.name` works
-      .filter(channel => channel.name === channelId)
-      .forEach(channel => {
-        channel
-          // @ts-ignore setTopic works
-          .setTopic(`${nowString}: ${count}`)
-          // Technically a GuildChannel, but TextChannel is fine
-          .then((updated: TextChannel) =>
-            console.log(`Updated topic in ${updated.guild.name}/#${channelId}: ${updated.topic}`)
-          )
-          .catch((error: any) => console.error('Failed to update ' + channelId, error));
-      })
-  );
+  return client.channels
+    .filter((channel) => {
+      // We know this is a TextChannel
+      const textChannel = channel as Discord.TextChannel;
+      return textChannel.name === channelId;
+    })
+    .forEach((channel) => {
+      // We know this is a TextChannel
+      const textChannel = channel as Discord.TextChannel;
+      textChannel
+        .setTopic(`${nowString}: ${count}`)
+        .then((updated) => {
+          // We know this is a TextChannel
+          const updatedTextChannel = updated as Discord.TextChannel;
+          console.log(`Updated topic in ${updated.guild.name}/#${channelId}: ${updatedTextChannel.topic}`);
+        })
+        .catch((error: any) => console.error('Failed to update ' + channelId, error));
+    });
 }
 
 function poll() {
   console.log('--> Retrieving data...');
-  return RequestPromise({
+  return RequestPromise.get({
     uri: 'https://api.voltaapi.com/v1/public-sites',
   })
     .catch((err: any) => {
@@ -99,7 +104,7 @@ function poll() {
         }
 
         chargersToCheck.forEach((chargerToCheck, index) => {
-          const site = publicSites.find(publicSite => publicSite.id === chargerToCheck.voltaId);
+          const site = publicSites.find((publicSite) => publicSite.id === chargerToCheck.voltaId);
 
           if (!site) {
             console.error('cant find site', chargerToCheck.voltaId);
