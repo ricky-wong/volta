@@ -9,17 +9,17 @@
   "author": "ricky-wong",
   "dependencies": {
     "@types/config": "0.0.36",
-    "@types/request-promise": "^4.1.45",
-    "config": "^3.3.0",
-    "discord.js": "^11.6.2",
-    "eslint": "^6.8.0",
+    "@types/request-promise": "^4.1.46",
+    "config": "^3.3.1",
+    "discord.js": "^11.6.4",
+    "eslint": "^7.0.0",
     "request": "^2.88.2",
     "request-promise": "^4.2.5",
-    "ts-node": "^8.6.2",
-    "typescript": "^3.8.3"
+    "ts-node": "^8.10.1",
+    "typescript": "^3.9.2"
   },
   "devDependencies": {
-    "@types/node": "^12.12.30",
+    "@types/node": "^12.12.39",
     "minimist": ">=1.2.5"
   }
 }
