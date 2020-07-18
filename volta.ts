@@ -35,7 +35,7 @@ const client = new Discord.Client();
 
 function notify(channelId: string, count: number) {
   console.log('notifying');
-  return client.channels
+  return client.channels.cache
     .filter((channel) => {
       // We know this is a TextChannel
       const textChannel = channel as Discord.TextChannel;
@@ -66,7 +66,7 @@ function setTopic(channelId: string, count: number) {
     timeZone: 'America/Los_Angeles',
   });
 
-  return client.channels
+  return client.channels.cache
     .filter((channel) => {
       // We know this is a TextChannel
       const textChannel = channel as Discord.TextChannel;
@@ -143,8 +143,8 @@ function poll() {
 
 client.on('ready', () => {
   console.log('Connected');
-  console.log(`Logged in as ${client.user.tag}!`);
-  console.log(client.user.username + ' - (' + client.user.id + ')');
+  console.log(`Logged in as ${client?.user?.tag}!`);
+  console.log(client?.user?.username + ' - (' + client?.user?.id + ')');
 });
 
 client.on('error', console.error);

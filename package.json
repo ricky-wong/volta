@@ -1,6 +1,6 @@
 {
   "name": "volta-bot",
-  "version": "0.0.3",
+  "version": "0.0.5",
   "description": "A notifier for Volta charging availability.",
   "main": "volta.ts",
   "scripts": {
@@ -9,17 +9,17 @@
   },
   "author": "ricky-wong",
   "dependencies": {
-    "@types/config": "0.0.36",
-    "config": "^3.3.1",
-    "discord.js": "^11.6.4",
-    "eslint": "^7.0.0",
-    "request": "^2.88.2",
-    "request-promise": "^4.2.5",
-    "typescript": "^3.9.2"
+    "@types/config": "*",
+    "config": "*",
+    "discord.js": "*",
+    "eslint": "*",
+    "request": "*",
+    "request-promise": "*",
+    "typescript": "*"
   },
   "devDependencies": {
-    "@types/node": "^12.12.39",
-    "@types/request-promise": "^4.1.46",
-    "minimist": ">=1.2.5"
+    "@types/node": "*",
+    "@types/request-promise": "*",
+    "minimist": "*"
   }
 }
